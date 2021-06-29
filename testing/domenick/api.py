@@ -1,4 +1,5 @@
 from re import split
+from textwrap import indent
 from streamlit import cli as stcli
 import streamlit as st
 import sys
@@ -50,7 +51,14 @@ def main():
     json_data = callApi()
     st.title('ECIPDA Dashboard')
     #st.help(json_data)
-    st.write(json_data['seriesID'])
+    # print(type(json_data))
+    #json_object = json.dumps(json_data)
+    #st.write(json_data)
+    json_df = pd.DataFrame(json_data['Results'])
+    print(type(json_df))
+    st.write(json_df)
+    #st.write(json.dumps(json_data), indent = 4)
+    
     
 
 if __name__ == '__main__':
