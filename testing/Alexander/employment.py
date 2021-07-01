@@ -29,6 +29,10 @@ st.write(year)
 st.write(period)
 st.write(value)
 
+json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
+print(type(json_df))
+st.write(json_df)
+
 
 #data = json.load(open(p.text))
 
