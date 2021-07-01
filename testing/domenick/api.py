@@ -9,11 +9,19 @@ import requests
 import json
 import prettytable
 
+def create_data():
+    prefix = 'CE'
+    sacCode = '41423430'
+    type ='01'
+    
+    string = '"' + prefix + 'U' + sacCode + type + '"'
+    
+    return string
 
-def callApi():
-
+def callApi(string):
+    string = create_data()
     headers = {'Content-type': 'application/json'}
-    data = json.dumps({"seriesid": ['CEU4142343001'], "startyear":"2010","endyear":"2020"})
+    data = json.dumps({"seriesid": [string], "startyear":"2010","endyear":"2020"})
     p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/?registrationkey=5590bbd31ba54c5e902eefa0b1e8a23b', data=data, headers=headers)
     json_data = json.loads(p.text)
 
@@ -38,12 +46,9 @@ def callApi():
     
     return json_data
 
-def create_data():
-    
-    return 0
-
 def main():
-    json_data = callApi()
+    string = create_data()
+    json_data = callApi(string)
     st.title('ECIPDA Dashboard')
     json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
     st.write(json_df)
