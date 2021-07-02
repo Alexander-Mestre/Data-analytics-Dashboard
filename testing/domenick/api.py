@@ -14,12 +14,13 @@ def create_data():
     sacCode = '41423430'
     type ='01'
     
-    string = '"' + prefix + 'U' + sacCode + type + '"'
+    string = prefix + 'U' + sacCode + type
     
+    print(string)
     return string
 
 def callApi(string):
-    string = create_data()
+    # string = create_data()
     headers = {'Content-type': 'application/json'}
     data = json.dumps({"seriesid": [string], "startyear":"2010","endyear":"2020"})
     p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/?registrationkey=5590bbd31ba54c5e902eefa0b1e8a23b', data=data, headers=headers)
@@ -51,12 +52,14 @@ def main():
     json_data = callApi(string)
     st.title('ECIPDA Dashboard')
     json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
+    json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
     st.write(json_df)
-    emp_dist = pd.DataFrame(json_df, columns=['value','year','periodName'])
+    emp_dist = pd.DataFrame(json_df, columns=['value','monthYear'])
     print(emp_dist)
 
     c = alt.Chart(emp_dist).mark_line().encode(
-        x= 'periodName',y='value'
+        x=alt.X('monthYear:T', axis=alt.Axis(format='%b', title='Month of Each Year')),
+        y='value:Q'
     )
     st.altair_chart(c)
     #st.write(json.dumps(json_data), indent = 4)
