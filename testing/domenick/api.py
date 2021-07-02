@@ -1,5 +1,6 @@
 from re import split
 from textwrap import indent
+from numpy.core.fromnumeric import sort
 from streamlit import cli as stcli
 import altair as alt
 import streamlit as st
@@ -9,8 +10,31 @@ import requests
 import json
 import prettytable
 
-def create_data():
-    prefix = 'CE'
+def get_prefix():
+    prefix = ['Select Option','State Employment','County Employment']
+
+    choice = st.selectbox('Choose Type:', options=prefix, index=0)
+
+    return choice
+
+def get_sac_code():
+    choice = ''
+    return choice
+
+def get_type():
+    choice =''
+    return choice
+
+def create_data():      #Need to get prefix, sac code, and type as a drop down
+    option = get_prefix()
+         #Figure out how to get the correct JSON info
+    if 'Select Option' in option:
+        prefix = ''
+    elif 'State Employment' in option:    # If user selects State Employment
+        prefix = 'CE'
+    elif 'County Employment' in option:   # If user selects County Employment
+        prefix = 'OE'
+
     sacCode = '41423430'
     type ='01'
     
@@ -49,6 +73,9 @@ def callApi(string):
 
 def main():
     string = create_data()
+    #print(string)
+    
+    """
     json_data = callApi(string)
     st.title('ECIPDA Dashboard')
     json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
@@ -57,14 +84,16 @@ def main():
     emp_dist = pd.DataFrame(json_df, columns=['value','monthYear'])
     print(emp_dist)
 
+    st.selectbox('Select', ['emp_dist'])
+
     c = alt.Chart(emp_dist).mark_line().encode(
-        x=alt.X('monthYear:T', axis=alt.Axis(format='%b', title='Month of Each Year')),
+        x=alt.X('monthYear', axis=alt.Axis(title='Month of Each Year')),
         y='value:Q'
     )
     st.altair_chart(c)
     #st.write(json.dumps(json_data), indent = 4)
     
-    
+    """
 
 if __name__ == '__main__':
     if st._is_running_with_streamlit:
