@@ -1,6 +1,6 @@
 {
     "prefix": {
-        "State and County Employment and Wages from Quarterly Census of Employment and Wages": "EN"
+        "State/County Employment from Census": "EN"
     },
     "seasonal": {
         "Seasonal": "S",

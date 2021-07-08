@@ -1,6 +1,8 @@
 {
     "prefix":
-    {},
+    {
+        "State/Area Employment, Hours, and Earnings": "SM"
+    },
     "seasonal":
     {},
     "state":

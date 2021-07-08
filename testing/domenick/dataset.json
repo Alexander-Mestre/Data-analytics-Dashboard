@@ -2,8 +2,8 @@
     "dataset":
     {
     "National Employment, Hours, and Earnings": "emp_unemp.json",
-    "Occupational Employment & Wage Stats": "occupation.json",
-    "State/County Employment from Census": "statcounty.json",
+    "Occupational Employment and Wage Stats": "occupation.json",
+    "State/County Employment from Census": "statecounty.json",
     "State/Area Employment, Hours, and Earnings": "stateemploy.json"
     }
 }

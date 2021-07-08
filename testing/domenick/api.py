@@ -52,9 +52,11 @@ def create_data():
 
     # THE JSON FILE THE USER WANTED TO SEE DATA 
     dataset = get_json_file(files[selection])
-    
+
     #print("DATASET " + str(dataset)  + "\n")
     #print(dataset)
+
+    string = ''             # Initializing String
 
     if (selection == 'National Employment, Hours, and Earnings'):
         prefix = dataset['prefix'][selection]
@@ -71,7 +73,7 @@ def create_data():
         string = str(prefix) + str(sac) + str(industry) + str(dataType)
         print(string + "\n")
     
-    elif (selection == 'Occupational Employment & Wage Stats'):
+    elif (selection == 'Occupational Employment and Wage Stats'):
         prefix = dataset['prefix'][selection]
 
         sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
@@ -104,8 +106,8 @@ def create_data():
         areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
         area = dataset['area'][areaSelect]
 
-        dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
-        dataType = dataset['data'][dataTypeSelect]
+        dataTypeSelect = st.selectbox('Select', options=list(dataset['data_type'].keys()))
+        dataType = dataset['data_type'][dataTypeSelect]
 
         sizeSelect = st.selectbox('Select', options=list(dataset['size'].keys()))
         size = dataset['size'][sizeSelect]
@@ -120,7 +122,7 @@ def create_data():
         string = str(prefix) + str(sac) + str(area) + str(dataType) + str(size) + str(ownership) + str(industry)
         print(string + "\n")
 
-    elif (selection == 'State/County Employment from Census'):
+    elif (selection == 'State/Area Employment, Hours, and Earnings'):
         prefix = dataset['prefix'][selection]
 
         sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
