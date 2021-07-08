@@ -20,6 +20,7 @@ import pickle as pk
 #
 # Created by Domenick Casper and Alexandre Mestre
 
+# Opens the dataset.json file and gets a list of the datasets there
 def get_data_set():
     with open('dataset.json') as json_file:
         json_obj = json.load(json_file)
@@ -27,6 +28,7 @@ def get_data_set():
 
     return dataset
 
+# Uses the json_file name to get the different drop downs that will be needed
 def get_json_file(file):
     print(file)
     with open(file) as json_file:
@@ -38,11 +40,19 @@ def get_json_file(file):
 # Creating the string that will be passed to the API
 def create_data(): 
     
+    # THE USER SELECTED DATASET
     selection = st.selectbox('Datasets', options=list(get_data_set().keys()))
+
     #print("SELECTION " + selection + " \n")
+
+    # THE FILE NAME OF THE DATA SET
     files = get_data_set()
+
     #print("FILES " + str(files)  + "\n")
+
+    # THE JSON FILE THE USER WANTED TO SEE DATA 
     dataset = get_json_file(files[selection])
+    
     #print("DATASET " + str(dataset)  + "\n")
     #print(dataset)
 
@@ -60,6 +70,78 @@ def create_data():
 
         string = str(prefix) + str(sac) + str(industry) + str(dataType)
         print(string + "\n")
+    
+    elif (selection == 'Occupational Employment & Wage Stats'):
+        prefix = dataset['prefix'][selection]
+
+        sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+        sac = dataset['seasonal'][sacSelect]
+
+        areaTypeSelect = st.selectbox('Select', options=list(dataset['area_type'].keys()))
+        area_type = dataset['area_type'][areaTypeSelect]
+
+        areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+        area = dataset['area_type'][areaSelect]
+
+        industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+        industry = dataset['industry'][industrySelect]
+
+        occupationSelect = st.selectbox('Select', options=list(dataset['occupation'].keys()))
+        occupation = dataset['occupation'][occupationSelect]
+
+        dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+        dataType = dataset['data'][dataTypeSelect]
+
+        string = str(prefix) + str(sac) + str(area_type) + str(area) + str(industry) + str(occupation) + str(dataType)
+        print(string + "\n")
+
+    elif (selection == 'State/County Employment from Census'):
+        prefix = dataset['prefix'][selection]
+
+        sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+        sac = dataset['seasonal'][sacSelect]
+
+        areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+        area = dataset['area'][areaSelect]
+
+        dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+        dataType = dataset['data'][dataTypeSelect]
+
+        sizeSelect = st.selectbox('Select', options=list(dataset['size'].keys()))
+        size = dataset['size'][sizeSelect]
+
+        ownerSelect = st.selectbox('Select', options=list(dataset['ownership'].keys()))
+        ownership = dataset['ownership'][ownerSelect]
+
+        industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+        industry = dataset['industry'][industrySelect]
+
+
+        string = str(prefix) + str(sac) + str(area) + str(dataType) + str(size) + str(ownership) + str(industry)
+        print(string + "\n")
+
+    elif (selection == 'State/County Employment from Census'):
+        prefix = dataset['prefix'][selection]
+
+        sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+        sac = dataset['seasonal'][sacSelect]
+
+        stateSelect = st.selectbox('Select', options=list(dataset['state'].keys()))
+        state = dataset['state'][stateSelect]
+
+        areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+        area = dataset['area'][areaSelect]
+
+        industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+        industry = dataset['industry'][industrySelect]
+
+        dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+        dataType = dataset['data'][dataTypeSelect]
+
+        string = str(prefix) + str(sac) + str(state) + str(area) + str(industry) + str(dataType)
+        print(string + "\n")
+
+
     # datasets = get_dataset() 
     # options = get_prefix()                           # Get the Prefix
     # seasons = get_seasonal()                         # Get whether it's seasonally ajusted or not
