@@ -1,0 +1,24 @@
+{
+    "prefix":
+    {
+        "National Employment, Hours, and Earnings": "CE"
+    },
+    "seasonal":
+    {
+        "Seasonal": "S",
+        "Non-Seasonal": "U"
+    },
+    "industry":
+    {
+        "Computer and Software": "41423430"
+    },
+    "data":
+    {
+        "Select Type": "",
+        "All Employees": "01",
+        "Average Weekly Hours": "02",
+        "Average Hourly Earnings": "03",
+        "Average Weekly Earnings": "11"
+    }
+
+}

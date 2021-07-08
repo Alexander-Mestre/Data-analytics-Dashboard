@@ -1,0 +1,22 @@
+{
+    "prefix":
+    {
+        "Occupational Employment and Wage Statistics": "OE"
+    },
+    "seasonal":
+    {
+        "Seasonal": "S",
+        "Non-Seasonal": "U"
+    },
+    "area_type":
+    {},
+    "area":
+    {},
+    "industry":
+    {},
+    "occupation":
+    {},
+    "data":
+    {}
+
+}

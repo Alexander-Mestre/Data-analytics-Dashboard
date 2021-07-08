@@ -10,6 +10,7 @@ import requests
 import json
 import prettytable
 import csv
+import pickle as pk
 
 # This application takes information from the Bureau of Labor Statistics
 # and combines it with Streamlit to make beautiful visuals from the data.
@@ -19,83 +20,106 @@ import csv
 #
 # Created by Domenick Casper and Alexandre Mestre
 
+def get_data_set():
+    with open('dataset.json') as json_file:
+        json_obj = json.load(json_file)
+        dataset = json_obj['dataset']
 
-# A list of all the diffrent Data Sets that the user can choose from.
-# Select Option is there for the create_data() function.
-def get_prefix():
-    prefix = ['Select Option','National Employment, Hours, and Earnings',
-        'State and Area Employment, Hours, and Earnings',
-        'Occupational Employment and Wage Statistics',
-        'Local Area Unemployment Statistics',
-        'Mass Layoff Statistics', 'Job Openings and Labor Turnover Survey' ]
+    return dataset
 
-    choice = st.selectbox('Choose Type:', options=prefix, index=0)
-    return choice
-
-# A list of Whether it's seasonal or not
-def get_seasonal():
-    seasonal = ['Select Option','Non-Seasonal', 'Seasonal']
-
-    choice = st.selectbox('Seasonal Adjustments:', options=seasonal, index=0)
-    return choice
-
-# Will open a csv file where all the different codes are stored to read from
-#
-# DO WE WANT JSON?
-def get_sac_code():
-    with open('sac_code.csv', newline='') as csvfile:       #Reading all the Codes from a CSV File?
-        choice = csv.reader(csvfile, delimeter=' ')
-    return choice
-
-# 
-def get_type():
-    choice =''
-    return choice
+def get_json_file(file):
+    print(file)
+    with open(file) as json_file:
+        json_obj = json.load(json_file)
+        codes = json_obj
+    
+    return codes
 
 # Creating the string that will be passed to the API
-def create_data():                                  
-    options = get_prefix()                           # Get the Prefix
-    seasons = get_seasonal()                         # Get whether it's seasonally ajusted or not
-    codes = get_sac_code()                           # Get the SAC Codes that are used in the bls.gov api
-    types = get_type()                               
+def create_data(): 
+    
+    selection = st.selectbox('Datasets', options=list(get_data_set().keys()))
+    print("SELECTION " + selection + " \n")
+    files = get_data_set()
+    print("FILES " + str(files)  + "\n")
+    dataset = get_json_file(files[selection])
+    print("DATASET " + str(dataset)  + "\n")
+    #print(dataset)
+
+    prefix = dataset['prefix'][selection]
+
+    sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+    sac = dataset['seasonal'][sacSelect]
+
+    industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+    industry = dataset['industry'][industrySelect]
+
+    dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+    dataType = dataset['data'][dataTypeSelect]
+
+
+
+    string = str(prefix) + str(sac) + str(industry) + str(dataType)
+    print(string + "\n")
+    # datasets = get_dataset() 
+    # options = get_prefix()                           # Get the Prefix
+    # seasons = get_seasonal()                         # Get whether it's seasonally ajusted or not
+    # industries = get_sac_code()                           # Get the SAC Codes that are used in the bls.gov api
+    # types = get_type() 
+    #print(types)    
+                         
          
     # https://www.bls.gov/help/hlpforma.htm
-    if 'Select Option' in options:
-        prefix = ''
-    elif 'National Employment, Hours, and Earnings' in options:    # If user selects State Employment
-        prefix = 'CE'
-    elif 'State and Area Employment, Hours, and Earnings' in options:   # If user selects County Employment
-        prefix = 'SM'
-    elif 'Occupational Employment and Wage Statistics' in options:
-        prefix = 'OE'
-    elif 'Local Area Unemployment Statistics' in options:
-        prefix = 'LA'
-    elif 'Mass Layoff Statistics' in options:
-        prefix = 'ML'
-    elif 'Job Openings and Labor Turnover Survey' in options:
-        prefix = 'JT'
+    # if 'Select Option' in options:
+    #     prefix = ''
+    # elif 'National Employment, Hours, and Earnings' in options:    # If user selects State Employment
+    #     prefix = 'CE'
+    # elif 'State and Area Employment, Hours, and Earnings' in options:   # If user selects County Employment
+    #     prefix = 'SM'
+    # elif 'Occupational Employment and Wage Statistics' in options:
+    #     prefix = 'OE'
+    # elif 'Local Area Unemployment Statistics' in options:
+    #     prefix = 'LA'
+    # elif 'Mass Layoff Statistics' in options:
+    #     prefix = 'ML'
+    # elif 'Job Openings and Labor Turnover Survey' in options:
+    #     prefix = 'JT'
 
     # https://download.bls.gov/pub/time.series/ce/ce.seasonal
-    if 'Select Option' in seasons:
-        season = ''
-    elif 'Non-Seasonal' in seasons:
-        season = 'U'
-    elif 'Seasonal' in seasons:
-        season = 'S'
+    # if 'Select Option' in seasons:
+    #     season = ''
+    # elif 'Non-Seasonal' in seasons:
+    #     season = 'U'
+    # elif 'Seasonal' in seasons:
+    #     season = 'S'
 
     # SUPERSECTOR: https://download.bls.gov/pub/time.series/ce/ce.supersector
     # INDUSTRY: https://download.bls.gov/pub/time.series/ce/ce.industry
-    if 'Computer and Software' in codes:
-        code = '41423430'
+
+    #Figure out how to make variable what user selected
+    #industry = industries['Computer and Software']
+    #print(industries)
+    
+    
+    #Figure out how to make variable what user selected
+    #type = types['All Employees']
 
     # https://download.bls.gov/pub/time.series/ce/ce.datatype
-    if 'All Employees' in types:
-        type = '01'
+    # if 'Select Type' in types:
+    #     type = ''
+    # elif 'All Employees' in types:
+    #     type = '01'
+    # elif 'Average Weekly Hours' in types:
+    #     type = '02'
+    # elif 'Average Hourly Earnings' in types:
+    #     type = '03'
+    # elif 'Average Weekly Earnings' in types:
+    #     type = '11'
 
     # sacCode = '41423430'
     # type ='01'
     
-    string = prefix + season + code + type
+    # string = prefix + season + industry + types #'01'
     
     #print(string)
     return string           # The Finished String!
@@ -142,17 +166,17 @@ def main():
     # json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
     # json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
     # st.write(json_df)
-    # emp_dist = pd.DataFrame(json_df, columns=['value','monthYear'])
+    # emp_dist = pd.DataFrame(json_df, columns=['value','monthYear', 'year'])
     # print(emp_dist)
 
-    # st.selectbox('Select', ['emp_dist'])
 
-    # c = alt.Chart(emp_dist).mark_line().encode(
-    #     x=alt.X('monthYear', axis=alt.Axis(title='Month of Each Year')),
+
+    # c = alt.Chart(emp_dist).mark_bar().encode(
+    #     x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
     #     y='value:Q'
     # )
     # st.altair_chart(c)
-    # #st.write(json.dumps(json_data), indent = 4)
+    #st.write(json.dumps(json_data), indent = 4)
     
     # 
 
