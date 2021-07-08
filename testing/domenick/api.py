@@ -39,28 +39,27 @@ def get_json_file(file):
 def create_data(): 
     
     selection = st.selectbox('Datasets', options=list(get_data_set().keys()))
-    print("SELECTION " + selection + " \n")
+    #print("SELECTION " + selection + " \n")
     files = get_data_set()
-    print("FILES " + str(files)  + "\n")
+    #print("FILES " + str(files)  + "\n")
     dataset = get_json_file(files[selection])
-    print("DATASET " + str(dataset)  + "\n")
+    #print("DATASET " + str(dataset)  + "\n")
     #print(dataset)
 
-    prefix = dataset['prefix'][selection]
+    if (selection == 'National Employment, Hours, and Earnings'):
+        prefix = dataset['prefix'][selection]
 
-    sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
-    sac = dataset['seasonal'][sacSelect]
+        sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+        sac = dataset['seasonal'][sacSelect]
 
-    industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
-    industry = dataset['industry'][industrySelect]
+        industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+        industry = dataset['industry'][industrySelect]
 
-    dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
-    dataType = dataset['data'][dataTypeSelect]
+        dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+        dataType = dataset['data'][dataTypeSelect]
 
-
-
-    string = str(prefix) + str(sac) + str(industry) + str(dataType)
-    print(string + "\n")
+        string = str(prefix) + str(sac) + str(industry) + str(dataType)
+        print(string + "\n")
     # datasets = get_dataset() 
     # options = get_prefix()                           # Get the Prefix
     # seasons = get_seasonal()                         # Get whether it's seasonally ajusted or not
