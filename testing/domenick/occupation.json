@@ -9,9 +9,15 @@
         "Non-Seasonal": "U"
     },
     "area_type":
-    {},
+    {
+        "Metropolitan or Nonmetropolitan Area": "M",
+        "National": "N",
+        "State": "S"
+    },
     "area":
-    {},
+    {
+        
+    },
     "industry":
     {},
     "occupation":
