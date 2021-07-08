@@ -37,6 +37,24 @@ def get_json_file(file):
     
     return codes
 
+def get_dates():
+    years = [2000, 2001, 2002, 2003, 2004, 2005,
+     2006, 2007, 2008, 2009, 2010, 2011, 2012,
+      2013, 2014, 2015, 2016, 2017, 2018, 2019, 
+      2020, 2021]
+
+
+    SD = st.selectbox('Start Yeear',options=years)
+
+    endYears = [year for year in years if year >= SD]
+    print(endYears)
+
+    if (SD):
+        ED = st.selectbox('End Year', options=endYears)
+    
+
+    return SD, ED
+
 # Creating the string that will be passed to the API
 def create_data(): 
     
@@ -205,14 +223,14 @@ def create_data():
     # string = prefix + season + industry + types #'01'
     
     #print(string)
-    return string           # The Finished String!
+    return string          # The Finished String!
 
 # Based on the bls.gov api found here: https://www.bls.gov/developers/api_python.htm
 def callApi(string):
-    # string = create_data()
+    startDate, endDate = get_dates()                # Getting the dates for the user to choose
     key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
     headers = {'Content-type': 'application/json'}  # CHECK YOUR EMAIL, CONFIRM THE KEY, AND YOU SHOULD BE ABLE TO USE THE CODE GIVEN
-    data = json.dumps({"seriesid": [string], "startyear":"2010","endyear":"2020"})
+    data = json.dumps({"seriesid": [string], "startyear":startDate,"endyear":endDate})
     p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/?registrationkey=' + key, data=data, headers=headers)
     json_data = json.loads(p.text)
 
@@ -243,7 +261,7 @@ def main():
     string = create_data()
     #print(string)
     
-    # 
+
     # json_data = callApi(string)
     # st.title('ECIPDA Dashboard')
     # json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
