@@ -1,8 +1,6 @@
 from logging import exception
 from re import split
 from textwrap import indent
-from altair.vegalite import data
-from numpy.core.fromnumeric import sort
 from streamlit import cli as stcli
 import altair as alt
 import streamlit as st
@@ -11,8 +9,6 @@ import pandas as pd
 import requests
 import json
 import prettytable
-import csv
-import pickle as pk
 
 # This application takes information from the Bureau of Labor Statistics
 # and combines it with Streamlit to make beautiful visuals from the data.
@@ -45,6 +41,7 @@ def get_json_file(file):
         
     return codes
 
+# Allows the user to select the dates they want displayed
 def get_dates():
     years = [2000, 2001, 2002, 2003, 2004, 2005,
      2006, 2007, 2008, 2009, 2010, 2011, 2012,
@@ -63,6 +60,7 @@ def get_dates():
 
     return SD, ED
 
+# Get the visual type depending on the users preferences
 def get_visual():
     visualTypes = ['Bar', 'Line', 'Point']
     visual = st.selectbox('Visual Type', options=visualTypes)
@@ -92,6 +90,8 @@ def create_data():
 
     string = ''             # Initializing String
 
+
+    # NEED TO CLEAN THIS UP TO MAKE IT BETTER & EASIER TO READ
     if (selection == 'Pick Dataset'):
         st.stop()
     else:
