@@ -1,5 +1,10 @@
+from logging import exception
+from os import wait
 from re import split
 from textwrap import indent
+from tokenize import Ignore
+from altair.vegalite import data
+from matplotlib.pyplot import pause
 from numpy.core.fromnumeric import sort
 from streamlit import cli as stcli
 import altair as alt
@@ -22,19 +27,25 @@ import pickle as pk
 
 # Opens the dataset.json file and gets a list of the datasets there
 def get_data_set():
+
     with open('dataset.json') as json_file:
         json_obj = json.load(json_file)
         dataset = json_obj['dataset']
-
+    
     return dataset
 
 # Uses the json_file name to get the different drop downs that will be needed
 def get_json_file(file):
     print(file)
-    with open(file) as json_file:
-        json_obj = json.load(json_file)
-        codes = json_obj
-    
+    #st.write('Select a Data Set')
+    if (file):
+        with open(file) as json_file:
+            json_obj = json.load(json_file)
+            codes = json_obj
+    else:
+        codes = {}
+        st.empty()
+        
     return codes
 
 def get_dates():
@@ -44,185 +55,134 @@ def get_dates():
       2020, 2021]
 
 
-    SD = st.selectbox('Start Yeear',options=years)
+    SD = st.selectbox('Start Year', options=years)
 
     endYears = [year for year in years if year >= SD]
-    print(endYears)
-
+    #print(endYears)
     if (SD):
         ED = st.selectbox('End Year', options=endYears)
+    
     
 
     return SD, ED
 
+def get_visual():
+    visualTypes = ['Bar', 'Line', 'Point']
+    visual = st.selectbox('Visual Type', options=visualTypes)
+    actualVisual = ''
+
+    if (visual == 'Bar'):
+        actualVisual = 'mark_bar()'
+    elif (visual == 'Line'):
+        actualVisual = 'mark_line()'
+    elif (visual == 'Point'):
+        actualVisual == 'mark_point()'
+
+    return actualVisual
+
 # Creating the string that will be passed to the API
 def create_data(): 
-    
     # THE USER SELECTED DATASET
     selection = st.selectbox('Datasets', options=list(get_data_set().keys()))
-
-    #print("SELECTION " + selection + " \n")
-
+    print("SELECTION " + selection + " \n")
     # THE FILE NAME OF THE DATA SET
     files = get_data_set()
-
-    #print("FILES " + str(files)  + "\n")
-
+    print("FILES " + str(files)  + "\n")
     # THE JSON FILE THE USER WANTED TO SEE DATA 
     dataset = get_json_file(files[selection])
-
-    #print("DATASET " + str(dataset)  + "\n")
+    print("DATASET " + str(dataset)  + "\n")
     #print(dataset)
 
     string = ''             # Initializing String
 
-    if (selection == 'National Employment, Hours, and Earnings'):
-        prefix = dataset['prefix'][selection]
+    if (selection == 'Pick Dataset'):
+        st.stop()
+    else:
+        if (selection == 'National Employment, Hours, and Earnings'):
+            prefix = dataset['prefix'][selection]
 
-        sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
-        sac = dataset['seasonal'][sacSelect]
+            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+            sac = dataset['seasonal'][sacSelect]
 
-        industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
-        industry = dataset['industry'][industrySelect]
+            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+            industry = dataset['industry'][industrySelect]
 
-        dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
-        dataType = dataset['data'][dataTypeSelect]
+            dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+            dataType = dataset['data'][dataTypeSelect]
 
-        string = str(prefix) + str(sac) + str(industry) + str(dataType)
-        print(string + "\n")
-    
-    elif (selection == 'Occupational Employment and Wage Stats'):
-        prefix = dataset['prefix'][selection]
+            string = str(prefix) + str(sac) + str(industry) + str(dataType)
+            print(string + "\n")
+        
+        elif (selection == 'Occupational Employment and Wage Stats'):
+            prefix = dataset['prefix'][selection]
 
-        sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
-        sac = dataset['seasonal'][sacSelect]
+            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+            sac = dataset['seasonal'][sacSelect]
 
-        areaTypeSelect = st.selectbox('Select', options=list(dataset['area_type'].keys()))
-        area_type = dataset['area_type'][areaTypeSelect]
+            areaTypeSelect = st.selectbox('Select', options=list(dataset['area_type'].keys()))
+            area_type = dataset['area_type'][areaTypeSelect]
 
-        areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
-        area = dataset['area_type'][areaSelect]
+            areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+            area = dataset['area_type'][areaSelect]
 
-        industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
-        industry = dataset['industry'][industrySelect]
+            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+            industry = dataset['industry'][industrySelect]
 
-        occupationSelect = st.selectbox('Select', options=list(dataset['occupation'].keys()))
-        occupation = dataset['occupation'][occupationSelect]
+            occupationSelect = st.selectbox('Select', options=list(dataset['occupation'].keys()))
+            occupation = dataset['occupation'][occupationSelect]
 
-        dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
-        dataType = dataset['data'][dataTypeSelect]
+            dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+            dataType = dataset['data'][dataTypeSelect]
 
-        string = str(prefix) + str(sac) + str(area_type) + str(area) + str(industry) + str(occupation) + str(dataType)
-        print(string + "\n")
+            string = str(prefix) + str(sac) + str(area_type) + str(area) + str(industry) + str(occupation) + str(dataType)
+            print(string + "\n")
 
-    elif (selection == 'State/County Employment from Census'):
-        prefix = dataset['prefix'][selection]
+        elif (selection == 'State/County Employment from Census'):
+            prefix = dataset['prefix'][selection]
 
-        sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
-        sac = dataset['seasonal'][sacSelect]
+            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+            sac = dataset['seasonal'][sacSelect]
 
-        areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
-        area = dataset['area'][areaSelect]
+            areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+            area = dataset['area'][areaSelect]
 
-        dataTypeSelect = st.selectbox('Select', options=list(dataset['data_type'].keys()))
-        dataType = dataset['data_type'][dataTypeSelect]
+            dataTypeSelect = st.selectbox('Select', options=list(dataset['data_type'].keys()))
+            dataType = dataset['data_type'][dataTypeSelect]
 
-        sizeSelect = st.selectbox('Select', options=list(dataset['size'].keys()))
-        size = dataset['size'][sizeSelect]
+            sizeSelect = st.selectbox('Select', options=list(dataset['size'].keys()))
+            size = dataset['size'][sizeSelect]
 
-        ownerSelect = st.selectbox('Select', options=list(dataset['ownership'].keys()))
-        ownership = dataset['ownership'][ownerSelect]
+            ownerSelect = st.selectbox('Select', options=list(dataset['ownership'].keys()))
+            ownership = dataset['ownership'][ownerSelect]
 
-        industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
-        industry = dataset['industry'][industrySelect]
-
-
-        string = str(prefix) + str(sac) + str(area) + str(dataType) + str(size) + str(ownership) + str(industry)
-        print(string + "\n")
-
-    elif (selection == 'State/Area Employment, Hours, and Earnings'):
-        prefix = dataset['prefix'][selection]
-
-        sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
-        sac = dataset['seasonal'][sacSelect]
-
-        stateSelect = st.selectbox('Select', options=list(dataset['state'].keys()))
-        state = dataset['state'][stateSelect]
-
-        areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
-        area = dataset['area'][areaSelect]
-
-        industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
-        industry = dataset['industry'][industrySelect]
-
-        dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
-        dataType = dataset['data'][dataTypeSelect]
-
-        string = str(prefix) + str(sac) + str(state) + str(area) + str(industry) + str(dataType)
-        print(string + "\n")
+            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+            industry = dataset['industry'][industrySelect]
 
 
-    # datasets = get_dataset() 
-    # options = get_prefix()                           # Get the Prefix
-    # seasons = get_seasonal()                         # Get whether it's seasonally ajusted or not
-    # industries = get_sac_code()                           # Get the SAC Codes that are used in the bls.gov api
-    # types = get_type() 
-    #print(types)    
-                         
-         
-    # https://www.bls.gov/help/hlpforma.htm
-    # if 'Select Option' in options:
-    #     prefix = ''
-    # elif 'National Employment, Hours, and Earnings' in options:    # If user selects State Employment
-    #     prefix = 'CE'
-    # elif 'State and Area Employment, Hours, and Earnings' in options:   # If user selects County Employment
-    #     prefix = 'SM'
-    # elif 'Occupational Employment and Wage Statistics' in options:
-    #     prefix = 'OE'
-    # elif 'Local Area Unemployment Statistics' in options:
-    #     prefix = 'LA'
-    # elif 'Mass Layoff Statistics' in options:
-    #     prefix = 'ML'
-    # elif 'Job Openings and Labor Turnover Survey' in options:
-    #     prefix = 'JT'
+            string = str(prefix) + str(sac) + str(area) + str(dataType) + str(size) + str(ownership) + str(industry)
+            print(string + "\n")
 
-    # https://download.bls.gov/pub/time.series/ce/ce.seasonal
-    # if 'Select Option' in seasons:
-    #     season = ''
-    # elif 'Non-Seasonal' in seasons:
-    #     season = 'U'
-    # elif 'Seasonal' in seasons:
-    #     season = 'S'
+        elif (selection == 'State/Area Employment, Hours, and Earnings'):
+            prefix = dataset['prefix'][selection]
 
-    # SUPERSECTOR: https://download.bls.gov/pub/time.series/ce/ce.supersector
-    # INDUSTRY: https://download.bls.gov/pub/time.series/ce/ce.industry
+            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+            sac = dataset['seasonal'][sacSelect]
 
-    #Figure out how to make variable what user selected
-    #industry = industries['Computer and Software']
-    #print(industries)
-    
-    
-    #Figure out how to make variable what user selected
-    #type = types['All Employees']
+            stateSelect = st.selectbox('Select', options=list(dataset['state'].keys()))
+            state = dataset['state'][stateSelect]
 
-    # https://download.bls.gov/pub/time.series/ce/ce.datatype
-    # if 'Select Type' in types:
-    #     type = ''
-    # elif 'All Employees' in types:
-    #     type = '01'
-    # elif 'Average Weekly Hours' in types:
-    #     type = '02'
-    # elif 'Average Hourly Earnings' in types:
-    #     type = '03'
-    # elif 'Average Weekly Earnings' in types:
-    #     type = '11'
+            areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+            area = dataset['area'][areaSelect]
 
-    # sacCode = '41423430'
-    # type ='01'
-    
-    # string = prefix + season + industry + types #'01'
-    
-    #print(string)
+            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+            industry = dataset['industry'][industrySelect]
+
+            dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+            dataType = dataset['data'][dataTypeSelect]
+
+            string = str(prefix) + str(sac) + str(state) + str(area) + str(industry) + str(dataType)
+            print(string + "\n")
+
     return string          # The Finished String!
 
 # Based on the bls.gov api found here: https://www.bls.gov/developers/api_python.htm
@@ -234,7 +194,8 @@ def callApi(string):
     p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/?registrationkey=' + key, data=data, headers=headers)
     json_data = json.loads(p.text)
 
-    print(json_data)
+    print('JSON DATA:' + str(json_data))
+
 
     # Iterate through the json_data and create a table in a txt document
     for series in json_data['Results']['series']:
@@ -259,12 +220,15 @@ def callApi(string):
 # Main does all the neat stuff, calling functions, creating some of the streamlit application
 def main():
     string = create_data()
+    visual = get_visual()
     #print(string)
     
+    #st.button('Create Visual',)
 
     # json_data = callApi(string)
     # st.title('ECIPDA Dashboard')
     # json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
+    # print(json_df)
     # json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
     # st.write(json_df)
     # emp_dist = pd.DataFrame(json_df, columns=['value','monthYear', 'year'])
@@ -272,14 +236,15 @@ def main():
 
 
 
-    # c = alt.Chart(emp_dist).mark_bar().encode(
+    # c = alt.Chart(emp_dist).mark_line().encode(
     #     x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
     #     y='value:Q'
     # )
+    # print(type(c))
     # st.altair_chart(c)
-    #st.write(json.dumps(json_data), indent = 4)
+    # st.write(json.dumps(json_data), indent = 4)
     
-    # 
+
 
 # Allows you to run the application once, and never have to worry about re-running to test code
 if __name__ == '__main__':
