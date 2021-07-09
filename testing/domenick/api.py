@@ -1,10 +1,7 @@
 from logging import exception
-from os import wait
 from re import split
 from textwrap import indent
-from tokenize import Ignore
 from altair.vegalite import data
-from matplotlib.pyplot import pause
 from numpy.core.fromnumeric import sort
 from streamlit import cli as stcli
 import altair as alt
