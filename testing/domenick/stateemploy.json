@@ -4,14 +4,51 @@
         "State/Area Employment, Hours, and Earnings": "SM"
     },
     "seasonal":
-    {},
+    {
+        "Seasonal": "S",
+        "Non-Seasonal": "U"
+    },
     "state":
-    {},
+    {
+        "Idaho": "16"
+    },
     "area":
-    {},
+    {
+        "Statewide": "00000",
+        "Boisee City, ID": "14260",
+        "Coeur d'Alene, ID": "17660",
+        "Idaho Falls, ID": "26820",
+        "Lewiston, ID-WA": "30300",
+        "Pocatello, ID": "38540",
+        "Twin Falls, ID": "46300",
+        "Northwestern Idaho": "00006",
+        "Southeast-Central Idaho": "00007"
+    },
     "industry":
-    {},
+    {
+        "Total Nonfarm": "00000000",
+        "Total Private": "05000000",
+        "Goods-Producing": "06000000",
+        "Service-Providing": "07000000",
+        "Private Service-Providing": "08000000",
+        "Construction": "20000000",
+        "Manufacturing": "30000000",
+        "Trade, Transportation, Utilities": "40000000",
+        "Retail Trade": "42000000",
+        "Transportation and Warehousing": "43000000",
+        "Utilities": "44220000",
+        "Information": "50000000",
+        "Financial Activities": "55000000",
+        "Professional and Business Services": "60000000",
+        "Other Services": "80000000",
+        "Government": "90000000"
+    },
     "data":
-    {}
+    {
+        "All Employees": "01",
+        "Average Weekly Hours": "02",
+        "Average Hourly Earnings": "03",
+        "Average Weekly Earnings": "11"
+    }
 
 }
