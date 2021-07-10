@@ -8,7 +8,8 @@ import sys
 import pandas as pd
 import requests
 import json
-import prettytable
+#import prettytable
+
 
 # This application takes information from the Bureau of Labor Statistics
 # and combines it with Streamlit to make beautiful visuals from the data.
@@ -51,9 +52,9 @@ def get_dates():
 
     SD = st.selectbox('Start Year', options=years)
 
-    endYears = [year for year in years if year >= SD]
     #print(endYears)
     if (SD):
+        endYears = [year for year in years if year >= SD]
         ED = st.selectbox('End Year', options=endYears)
     
     
@@ -71,21 +72,64 @@ def get_visual():
     elif (visual == 'Line'):
         actualVisual = 'mark_line()'
     elif (visual == 'Point'):
-        actualVisual == 'mark_point()'
-
+        actualVisual = 'mark_point()'
+    
+    print(actualVisual)
     return actualVisual
+
+def create_visual():
+    st.header('Pick from these drop downs')
+    string = create_data()
+    # st.button('See Visual', on_click = get_visual())
+    visual = get_visual()
+    print(string)
+    
+    json_data = callApi(string)
+    st.title('ECIPDA Dashboard')
+    json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
+    print(json_df)
+    json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
+    # # #json_df['yearTotals'] = (json_df['value'])
+    # # st.write(json_df)
+    emp_dist = pd.DataFrame(json_df, columns=['value','monthYear', 'year', 'yearTotals'])
+    print(emp_dist)
+
+    # This creates the visuals!
+    if (visual == 'mark_point()'):
+        c = alt.Chart(emp_dist).mark_point().encode(
+        x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
+        y='value:Q'
+        )
+
+    elif (visual == 'mark_bar()'):
+        c = alt.Chart(emp_dist).mark_bar().encode(
+        x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
+        y='value:Q'
+        )
+
+    elif (visual == 'mark_line()'):
+        c = alt.Chart(emp_dist).mark_line().encode(
+            x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
+            y='value:Q'
+        )
+    print(type(c))
+    theVisual = st.altair_chart(c)
+    #st.write(json.dumps(json_data), indent = 4)
+    
+
+    return theVisual
 
 # Creating the string that will be passed to the API
 def create_data(): 
     # THE USER SELECTED DATASET
     selection = st.selectbox('Datasets', options=list(get_data_set().keys()))
-    print("SELECTION " + selection + " \n")
+    #print("SELECTION " + selection + " \n")
     # THE FILE NAME OF THE DATA SET
     files = get_data_set()
-    print("FILES " + str(files)  + "\n")
+    #print("FILES " + str(files)  + "\n")
     # THE JSON FILE THE USER WANTED TO SEE DATA 
     dataset = get_json_file(files[selection])
-    print("DATASET " + str(dataset)  + "\n")
+    #print("DATASET " + str(dataset)  + "\n")
     #print(dataset)
 
     string = ''             # Initializing String
@@ -180,12 +224,16 @@ def create_data():
             string = str(prefix) + str(sac) + str(state) + str(area) + str(industry) + str(dataType)
             print(string + "\n")
 
+        st.subheader('Now Select the Visual you would like to see: ')
+        #st.button('Create Visual', key='mtndew', on_click=main())
+
     return string          # The Finished String!
 
 # Based on the bls.gov api found here: https://www.bls.gov/developers/api_python.htm
 def callApi(string):
     startDate, endDate = get_dates()                # Getting the dates for the user to choose
-    key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
+    #key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
+    key = '1590d05ee887498794d547fc750badd6'
     headers = {'Content-type': 'application/json'}  # CHECK YOUR EMAIL, CONFIRM THE KEY, AND YOU SHOULD BE ABLE TO USE THE CODE GIVEN
     data = json.dumps({"seriesid": [string], "startyear":startDate,"endyear":endDate})
     p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/?registrationkey=' + key, data=data, headers=headers)
@@ -193,53 +241,17 @@ def callApi(string):
 
     print('JSON DATA:' + str(json_data))
 
-
-    # Iterate through the json_data and create a table in a txt document
-    for series in json_data['Results']['series']:
-        x=prettytable.PrettyTable(["series id","year","period","value","footnotes"])
-        seriesId = series['seriesID']
-        for item in series['data']:
-            year = item['year']
-            period = item['period']
-            value = item['value']
-            footnotes=""
-            for footnote in item['footnotes']:
-                if footnote:
-                    footnotes = footnotes + footnote['text'] + ','
-            if 'M01' <= period <= 'M12':
-                x.add_row([seriesId,year,period,value,footnotes[0:-1]])
-    output = open('text/' + seriesId + '.txt','w')
-    output.write (x.get_string())
-    output.close()
+    if(json_data['status'] == 'REQUEST_NOT_PROCESSED'):
+        # st.('Come back tomorrow')
+        st.warning('Come Back Tomorrow, You have reached the maxiumum number of calls')
+        st.stop()
     
     return json_data
 
 # Main does all the neat stuff, calling functions, creating some of the streamlit application
 def main():
-    string = create_data()
-    visual = get_visual()
-    #print(string)
     
-    #st.button('Create Visual',)
-
-    # json_data = callApi(string)
-    # st.title('ECIPDA Dashboard')
-    # json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
-    # print(json_df)
-    # json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
-    # st.write(json_df)
-    # emp_dist = pd.DataFrame(json_df, columns=['value','monthYear', 'year'])
-    # print(emp_dist)
-
-
-
-    # c = alt.Chart(emp_dist).mark_line().encode(
-    #     x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
-    #     y='value:Q'
-    # )
-    # print(type(c))
-    # st.altair_chart(c)
-    # st.write(json.dumps(json_data), indent = 4)
+    st.button('Visual', create_visual())
     
 
 
