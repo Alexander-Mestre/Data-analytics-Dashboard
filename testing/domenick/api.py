@@ -19,6 +19,11 @@ import json
 #
 # Created by Domenick Casper and Alexandre Mestre
 
+
+def get_warning():
+    st.warning('Come Back Tomorrow, You have reached the maxiumum number of calls')
+    st.stop()
+
 # Opens the dataset.json file and gets a list of the datasets there
 def get_data_set():
 
@@ -44,20 +49,19 @@ def get_json_file(file):
 
 # Allows the user to select the dates they want displayed
 def get_dates():
-    years = ['Year', 2000, 2001, 2002, 2003, 2004, 2005,
+    years = [2000, 2001, 2002, 2003, 2004, 2005,
      2006, 2007, 2008, 2009, 2010, 2011, 2012,
       2013, 2014, 2015, 2016, 2017, 2018, 2019, 
       2020, 2021]
 
 
     SD = st.selectbox('Start Year', options=years)
-
+    ED = ''
+    print(SD)
     #print(endYears)
-    if (SD == 'Year'):
+    if (SD):
         endYears = [year for year in years if year >= SD]
         ED = st.selectbox('End Year', options=endYears)
-    
-    
 
     return SD, ED
 
@@ -79,12 +83,12 @@ def get_visual():
 
 def create_visual():
     st.header('Pick from these drop downs')
-    string = create_data()
+    string, startDate, endDate = create_data()
     # st.button('See Visual', on_click = get_visual())
     visual = get_visual()
     print(string)
     
-    json_data = callApi(string)
+    json_data = callApi(string, startDate, endDate)
     st.title('ECIPDA Dashboard')
     json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
     print(json_df)
@@ -121,6 +125,7 @@ def create_visual():
 
 # Creating the string that will be passed to the API
 def create_data(): 
+    
     # THE USER SELECTED DATASET
     selection = st.selectbox('Datasets', options=list(get_data_set().keys()))
     #print("SELECTION " + selection + " \n")
@@ -136,19 +141,20 @@ def create_data():
 
 
     # NEED TO CLEAN THIS UP TO MAKE IT BETTER & EASIER TO READ
+    
     if (selection == 'Pick Dataset'):
         st.stop()
     else:
         if (selection == 'National Employment, Hours, and Earnings'):
             prefix = dataset['prefix'][selection]
 
-            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()), key='1')
             sac = dataset['seasonal'][sacSelect]
 
-            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()), key='2')
             industry = dataset['industry'][industrySelect]
 
-            dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+            dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()), key='3')
             dataType = dataset['data'][dataTypeSelect]
 
             string = str(prefix) + str(sac) + str(industry) + str(dataType)
@@ -223,35 +229,51 @@ def create_data():
 
             string = str(prefix) + str(sac) + str(state) + str(area) + str(industry) + str(dataType)
             print(string + "\n")
-
+        
+        startDate, endDate = get_dates()
         st.subheader('Now Select the Visual you would like to see: ')
+        
         #st.button('Create Visual', key='mtndew', on_click=main())
-
-    return string          # The Finished String!
+    
+    return string, startDate, endDate          # The Finished String!
 
 # Based on the bls.gov api found here: https://www.bls.gov/developers/api_python.htm
-def callApi(string):
-    startDate, endDate = get_dates()                # Getting the dates for the user to choose
-    #key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
-    key = '1590d05ee887498794d547fc750badd6'
-    headers = {'Content-type': 'application/json'}  # CHECK YOUR EMAIL, CONFIRM THE KEY, AND YOU SHOULD BE ABLE TO USE THE CODE GIVEN
-    data = json.dumps({"seriesid": [string], "startyear":startDate,"endyear":endDate})
-    p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/?registrationkey=' + key, data=data, headers=headers)
-    json_data = json.loads(p.text)
+# @st.cache(suppress_st_warning=True)
+def callApi(string, startDate, endDate):
+    json_data = ''
+    def get_data():
+        # Getting the dates for the user to choose
+        #key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
+        key = '1590d05ee887498794d547fc750badd6'
+        headers = {'Content-type': 'application/json'}  # CHECK YOUR EMAIL, CONFIRM THE KEY, AND YOU SHOULD BE ABLE TO USE THE CODE GIVEN
+        data = json.dumps({"seriesid": [string], "startyear":startDate,"endyear":endDate})
+        p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/?registrationkey=' + key, data=data, headers=headers)
+        json_data = json.loads(p.text)
+        return json_data
+    pressed = st.button('Request Data', key='dataReturn')
+
+    if (pressed):
+        json_data = get_data() 
+        print('SUCKERS'+ str(json_data))
+        if(json_data['status'] == 'REQUEST_NOT_PROCESSED'):
+            # st.('Come back tomorrow')
+            # st.warning('Come Back Tomorrow, You have reached the maxiumum number of calls')
+            # st.stop()
+            get_warning()
+
+    else:
+        st.stop()
 
     print('JSON DATA:' + str(json_data))
 
-    if(json_data['status'] == 'REQUEST_NOT_PROCESSED'):
-        # st.('Come back tomorrow')
-        st.warning('Come Back Tomorrow, You have reached the maxiumum number of calls')
-        st.stop()
+    
     
     return json_data
 
 # Main does all the neat stuff, calling functions, creating some of the streamlit application
 def main():
     
-    st.button('Visual', create_visual())
+    st.button('Create Visual', create_visual())
     
 
 
