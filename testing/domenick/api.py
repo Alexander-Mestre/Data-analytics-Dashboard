@@ -92,10 +92,10 @@ def create_visual():
     st.title('ECIPDA Dashboard')
     json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
     print(json_df)
-    json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
+    #json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
     # # #json_df['yearTotals'] = (json_df['value'])
     # # st.write(json_df)
-    emp_dist = pd.DataFrame(json_df, columns=['value','monthYear', 'year', 'yearTotals'])
+    emp_dist = pd.DataFrame(json_df, columns=['value', 'year'])
     print(emp_dist)
 
     # This creates the visuals!
@@ -148,13 +148,13 @@ def create_data():
         if (selection == 'National Employment, Hours, and Earnings'):
             prefix = dataset['prefix'][selection]
 
-            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()), key='1')
+            sacSelect = st.selectbox('Seasonally Adjusted or Not?', options=list(dataset['seasonal'].keys()), key='1')
             sac = dataset['seasonal'][sacSelect]
 
-            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()), key='2')
+            industrySelect = st.selectbox('Which Industry?', options=list(dataset['industry'].keys()), key='2')
             industry = dataset['industry'][industrySelect]
 
-            dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()), key='3')
+            dataTypeSelect = st.selectbox('Which Data Type?', options=list(dataset['data'].keys()), key='3')
             dataType = dataset['data'][dataTypeSelect]
 
             string = str(prefix) + str(sac) + str(industry) + str(dataType)
@@ -163,22 +163,22 @@ def create_data():
         elif (selection == 'Occupational Employment and Wage Stats'):
             prefix = dataset['prefix'][selection]
 
-            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+            sacSelect = st.selectbox('Seasonally Adjusted or Not?', options=list(dataset['seasonal'].keys()))
             sac = dataset['seasonal'][sacSelect]
 
-            areaTypeSelect = st.selectbox('Select', options=list(dataset['area_type'].keys()))
+            areaTypeSelect = st.selectbox('Which type of Area?', options=list(dataset['area_type'].keys()))
             area_type = dataset['area_type'][areaTypeSelect]
 
-            areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+            areaSelect = st.selectbox('Which Area?', options=list(dataset['area'].keys()))
             area = dataset['area_type'][areaSelect]
 
-            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+            industrySelect = st.selectbox('Which Industry?', options=list(dataset['industry'].keys()))
             industry = dataset['industry'][industrySelect]
 
-            occupationSelect = st.selectbox('Select', options=list(dataset['occupation'].keys()))
+            occupationSelect = st.selectbox('Which Occupation?', options=list(dataset['occupation'].keys()))
             occupation = dataset['occupation'][occupationSelect]
 
-            dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+            dataTypeSelect = st.selectbox('Which Data Type?', options=list(dataset['data'].keys()))
             dataType = dataset['data'][dataTypeSelect]
 
             string = str(prefix) + str(sac) + str(area_type) + str(area) + str(industry) + str(occupation) + str(dataType)
@@ -187,22 +187,22 @@ def create_data():
         elif (selection == 'State/County Employment from Census'):
             prefix = dataset['prefix'][selection]
 
-            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+            sacSelect = st.selectbox('Seasonally Adjusted or Not?', options=list(dataset['seasonal'].keys()))
             sac = dataset['seasonal'][sacSelect]
 
-            areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+            areaSelect = st.selectbox('Which Area?', options=list(dataset['area'].keys()))
             area = dataset['area'][areaSelect]
 
-            dataTypeSelect = st.selectbox('Select', options=list(dataset['data_type'].keys()))
+            dataTypeSelect = st.selectbox('Which Data Type?', options=list(dataset['data_type'].keys()))
             dataType = dataset['data_type'][dataTypeSelect]
 
-            sizeSelect = st.selectbox('Select', options=list(dataset['size'].keys()))
+            sizeSelect = st.selectbox('Which Size?', options=list(dataset['size'].keys()))
             size = dataset['size'][sizeSelect]
 
-            ownerSelect = st.selectbox('Select', options=list(dataset['ownership'].keys()))
+            ownerSelect = st.selectbox('Which Owner?', options=list(dataset['ownership'].keys()))
             ownership = dataset['ownership'][ownerSelect]
 
-            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+            industrySelect = st.selectbox('Which Industry?', options=list(dataset['industry'].keys()))
             industry = dataset['industry'][industrySelect]
 
 
@@ -212,19 +212,19 @@ def create_data():
         elif (selection == 'State/Area Employment, Hours, and Earnings'):
             prefix = dataset['prefix'][selection]
 
-            sacSelect = st.selectbox('Select', options=list(dataset['seasonal'].keys()))
+            sacSelect = st.selectbox('Seasonally Adjusted or Not?', options=list(dataset['seasonal'].keys()))
             sac = dataset['seasonal'][sacSelect]
 
-            stateSelect = st.selectbox('Select', options=list(dataset['state'].keys()))
+            stateSelect = st.selectbox('Which State?', options=list(dataset['state'].keys()))
             state = dataset['state'][stateSelect]
 
-            areaSelect = st.selectbox('Select', options=list(dataset['area'].keys()))
+            areaSelect = st.selectbox('Which Area?', options=list(dataset['area'].keys()))
             area = dataset['area'][areaSelect]
 
-            industrySelect = st.selectbox('Select', options=list(dataset['industry'].keys()))
+            industrySelect = st.selectbox('Which Industry?', options=list(dataset['industry'].keys()))
             industry = dataset['industry'][industrySelect]
 
-            dataTypeSelect = st.selectbox('Select', options=list(dataset['data'].keys()))
+            dataTypeSelect = st.selectbox('Which Data Type?', options=list(dataset['data'].keys()))
             dataType = dataset['data'][dataTypeSelect]
 
             string = str(prefix) + str(sac) + str(state) + str(area) + str(industry) + str(dataType)
