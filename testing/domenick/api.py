@@ -1,6 +1,8 @@
 from logging import exception
 from re import split
 from textwrap import indent
+from altair import datasets
+from altair.vegalite import data
 from streamlit import cli as stcli
 import altair as alt
 import streamlit as st
@@ -8,6 +10,7 @@ import sys
 import pandas as pd
 import requests
 import json
+import datetime
 #import prettytable
 
 
@@ -49,10 +52,13 @@ def get_json_file(file):
 
 # Allows the user to select the dates they want displayed
 def get_dates():
-    years = [2000, 2001, 2002, 2003, 2004, 2005,
-     2006, 2007, 2008, 2009, 2010, 2011, 2012,
-      2013, 2014, 2015, 2016, 2017, 2018, 2019, 
-      2020, 2021]
+
+    years = [datetime.datetime.today().year - index for index in range(30)]
+    years.reverse()
+    # years = [2000, 2001, 2002, 2003, 2004, 2005,
+    #  2006, 2007, 2008, 2009, 2010, 2011, 2012,
+    #   2013, 2014, 2015, 2016, 2017, 2018, 2019, 
+    #   2020, 2021]
 
 
     SD = st.selectbox('Start Year', options=years)
@@ -67,7 +73,7 @@ def get_dates():
 
 # Get the visual type depending on the users preferences
 def get_visual():
-    visualTypes = ['Bar', 'Line', 'Point']
+    visualTypes = ['Bar', 'Line', 'Point', 'Circle', 'Area', 'Box Plot']
     visual = st.selectbox('Visual Type', options=visualTypes)
     actualVisual = ''
 
@@ -77,19 +83,24 @@ def get_visual():
         actualVisual = 'mark_line()'
     elif (visual == 'Point'):
         actualVisual = 'mark_point()'
+    elif (visual == 'Circle'):
+        actualVisual = 'mark_circle()'
+    elif (visual == 'Area'):
+        actualVisual = 'mark_area()'
+    elif (visual == 'Box Plot'):
+        actualVisual = 'mark_boxplot()'
     
     print(actualVisual)
     return actualVisual
 
 def create_visual():
     st.header('Pick from these drop downs')
-    string, startDate, endDate = create_data()
+    string, startDate, endDate, dataType = create_data()
     # st.button('See Visual', on_click = get_visual())
     visual = get_visual()
     print(string)
     
     json_data = callApi(string, startDate, endDate)
-    st.title('ECIPDA Dashboard')
     json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
     print(json_df)
     #json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
@@ -101,25 +112,38 @@ def create_visual():
     # This creates the visuals!
     if (visual == 'mark_point()'):
         c = alt.Chart(emp_dist).mark_point().encode(
-        x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
-        y='value:Q'
+        x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
+        y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
         )
 
     elif (visual == 'mark_bar()'):
         c = alt.Chart(emp_dist).mark_bar().encode(
-        x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
-        y='value:Q'
-        )
-
+        x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
+        y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
+        ).interactive()
     elif (visual == 'mark_line()'):
         c = alt.Chart(emp_dist).mark_line().encode(
-            x=alt.X('year:T', axis=alt.Axis(title='Month of Each Year')),
-            y='value:Q'
+        x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
+        y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
         )
-    print(type(c))
+    elif (visual == 'mark_circle()'):
+        c = alt.Chart(emp_dist).mark_circle().encode(
+        x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
+        y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
+        )
+    elif (visual == 'mark_area()'):
+        c = alt.Chart(emp_dist).mark_area().encode(
+        x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
+        y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
+        )
+    elif (visual == 'mark_boxplot()'):
+        c = alt.Chart(emp_dist).mark_boxplot().encode(
+        x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
+        y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
+        )
+
     theVisual = st.altair_chart(c)
     #st.write(json.dumps(json_data), indent = 4)
-    
 
     return theVisual
 
@@ -127,7 +151,7 @@ def create_visual():
 def create_data(): 
     
     # THE USER SELECTED DATASET
-    selection = st.selectbox('Datasets', options=list(get_data_set().keys()))
+    selection = st.selectbox('Which DataSet would you like information for?', options=list(get_data_set().keys()))
     #print("SELECTION " + selection + " \n")
     # THE FILE NAME OF THE DATA SET
     files = get_data_set()
@@ -230,24 +254,31 @@ def create_data():
             string = str(prefix) + str(sac) + str(state) + str(area) + str(industry) + str(dataType)
             print(string + "\n")
         
+        st.info('Years can only have a 20 year difference at most')
         startDate, endDate = get_dates()
         st.subheader('Now Select the Visual you would like to see: ')
         
         #st.button('Create Visual', key='mtndew', on_click=main())
     
-    return string, startDate, endDate          # The Finished String!
+    return string, startDate, endDate, dataTypeSelect         # the string, start and end date
 
 # Based on the bls.gov api found here: https://www.bls.gov/developers/api_python.htm
 # @st.cache(suppress_st_warning=True)
 def callApi(string, startDate, endDate):
     json_data = ''
     def get_data():
+
+        # headers = {'Content-type': 'application/json'} 
+        # data = json.dumps({"seriesid": ['CEU4142343001'], "startyear":"2010","endyear":"2020", “registrationkey”=”5590bbd31ba54c5e902eefa0b1e8a23b”})
+        # p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/, data=data, headers=headers)
+        # json_data = json.loads(p.text)
+
         # Getting the dates for the user to choose
-        #key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
-        key = '1590d05ee887498794d547fc750badd6'
+        # GET YOUR OWN KEY!
+        key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
         headers = {'Content-type': 'application/json'}  # CHECK YOUR EMAIL, CONFIRM THE KEY, AND YOU SHOULD BE ABLE TO USE THE CODE GIVEN
-        data = json.dumps({"seriesid": [string], "startyear":startDate,"endyear":endDate})
-        p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/?registrationkey=' + key, data=data, headers=headers)
+        data = json.dumps({"seriesid": [string], "startyear":startDate,"endyear":endDate, "registrationkey":key})
+        p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
         json_data = json.loads(p.text)
         return json_data
     pressed = st.button('Request Data', key='dataReturn')
@@ -264,6 +295,10 @@ def callApi(string, startDate, endDate):
     else:
         st.stop()
 
+    # st.write(json_data['status']['Results'][0]['data'])
+    st.subheader('Here is the data that is being used to create the chart!')
+    json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
+    st.write(json_df)
     print('JSON DATA:' + str(json_data))
 
     
@@ -273,7 +308,9 @@ def callApi(string, startDate, endDate):
 # Main does all the neat stuff, calling functions, creating some of the streamlit application
 def main():
     
-    st.button('Create Visual', create_visual())
+    #st.button('Create Visual', create_visual())
+    st.title('ECIPDA Dashboard')
+    create_visual()
     
 
 
