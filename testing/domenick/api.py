@@ -194,7 +194,7 @@ def create_data():
             area_type = dataset['area_type'][areaTypeSelect]
 
             areaSelect = st.selectbox('Which Area?', options=list(dataset['area'].keys()))
-            area = dataset['area_type'][areaSelect]
+            area = dataset['area'][areaSelect]
 
             industrySelect = st.selectbox('Which Industry?', options=list(dataset['industry'].keys()))
             industry = dataset['industry'][industrySelect]
