@@ -11,8 +11,6 @@ import pandas as pd
 import requests
 import json
 import datetime
-#import prettytable
-
 
 # This application takes information from the Bureau of Labor Statistics
 # and combines it with Streamlit to make beautiful visuals from the data.
@@ -22,14 +20,13 @@ import datetime
 #
 # Created by Domenick Casper and Alexandre Mestre
 
-
+# Warning message to explain that the API call limit has reached
 def get_warning():
     st.warning('Come Back Tomorrow, You have reached the maxiumum number of calls')
     st.stop()
 
 # Opens the dataset.json file and gets a list of the datasets there
 def get_data_set():
-
     with open('dataset.json') as json_file:
         json_obj = json.load(json_file)
         dataset = json_obj['dataset']
@@ -39,7 +36,6 @@ def get_data_set():
 # Uses the json_file name to get the different drop downs that will be needed
 def get_json_file(file):
     print(file)
-    #st.write('Select a Data Set')
     if (file):
         with open(file) as json_file:
             json_obj = json.load(json_file)
@@ -55,16 +51,9 @@ def get_dates():
 
     years = [datetime.datetime.today().year - index for index in range(30)]
     years.reverse()
-    # years = [2000, 2001, 2002, 2003, 2004, 2005,
-    #  2006, 2007, 2008, 2009, 2010, 2011, 2012,
-    #   2013, 2014, 2015, 2016, 2017, 2018, 2019, 
-    #   2020, 2021]
-
 
     SD = st.selectbox('Start Year', options=years)
     ED = ''
-    print(SD)
-    #print(endYears)
     if (SD):
         endYears = [year for year in years if year >= SD]
         ED = st.selectbox('End Year', options=endYears)
@@ -115,7 +104,6 @@ def create_visual():
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
         y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
         )
-
     elif (visual == 'mark_bar()'):
         c = alt.Chart(emp_dist).mark_bar().encode(
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
@@ -142,14 +130,12 @@ def create_visual():
         y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
         )
 
-    theVisual = st.altair_chart(c)
-    #st.write(json.dumps(json_data), indent = 4)
+    theVisual = st.altair_chart(c)          # The completed Graph
 
     return theVisual
 
 # Creating the string that will be passed to the API
 def create_data(): 
-    
     # THE USER SELECTED DATASET
     selection = st.selectbox('Which DataSet would you like information for?', options=list(get_data_set().keys()))
     #print("SELECTION " + selection + " \n")
@@ -163,9 +149,7 @@ def create_data():
 
     string = ''             # Initializing String
 
-
     # NEED TO CLEAN THIS UP TO MAKE IT BETTER & EASIER TO READ
-    
     if (selection == 'Pick Dataset'):
         st.stop()
     else:
@@ -182,8 +166,7 @@ def create_data():
             dataType = dataset['data'][dataTypeSelect]
 
             string = str(prefix) + str(sac) + str(industry) + str(dataType)
-            print(string + "\n")
-        
+            print(string + "\n")      
         elif (selection == 'Occupational Employment and Wage Stats'):
             prefix = dataset['prefix'][selection]
 
@@ -207,7 +190,6 @@ def create_data():
 
             string = str(prefix) + str(sac) + str(area_type) + str(area) + str(industry) + str(occupation) + str(dataType)
             print(string + "\n")
-
         elif (selection == 'State/County Employment from Census'):
             prefix = dataset['prefix'][selection]
 
@@ -232,7 +214,6 @@ def create_data():
 
             string = str(prefix) + str(sac) + str(area) + str(dataType) + str(size) + str(ownership) + str(industry)
             print(string + "\n")
-
         elif (selection == 'State/Area Employment, Hours, and Earnings'):
             prefix = dataset['prefix'][selection]
 
@@ -257,22 +238,16 @@ def create_data():
         st.info('Years can only have a 20 year difference at most')
         startDate, endDate = get_dates()
         st.subheader('Now Select the Visual you would like to see: ')
-        
-        #st.button('Create Visual', key='mtndew', on_click=main())
     
     return string, startDate, endDate, dataTypeSelect         # the string, start and end date
 
 # Based on the bls.gov api found here: https://www.bls.gov/developers/api_python.htm
-# @st.cache(suppress_st_warning=True)
+@st.cache(suppress_st_warning=True)
 def callApi(string, startDate, endDate):
     json_data = ''
+
+    # Get's the data needed
     def get_data():
-
-        # headers = {'Content-type': 'application/json'} 
-        # data = json.dumps({"seriesid": ['CEU4142343001'], "startyear":"2010","endyear":"2020", “registrationkey”=”5590bbd31ba54c5e902eefa0b1e8a23b”})
-        # p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/, data=data, headers=headers)
-        # json_data = json.loads(p.text)
-
         # Getting the dates for the user to choose
         # GET YOUR OWN KEY!
         key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
@@ -287,28 +262,19 @@ def callApi(string, startDate, endDate):
         json_data = get_data() 
         print('SUCKERS'+ str(json_data))
         if(json_data['status'] == 'REQUEST_NOT_PROCESSED'):
-            # st.('Come back tomorrow')
-            # st.warning('Come Back Tomorrow, You have reached the maxiumum number of calls')
-            # st.stop()
-            get_warning()
-
+            get_warning()           # GET THAT WARNING
     else:
         st.stop()
 
-    # st.write(json_data['status']['Results'][0]['data'])
     st.subheader('Here is the data that is being used to create the chart!')
     json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
     st.write(json_df)
     print('JSON DATA:' + str(json_data))
 
-    
-    
     return json_data
 
 # Main does all the neat stuff, calling functions, creating some of the streamlit application
 def main():
-    
-    #st.button('Create Visual', create_visual())
     st.title('ECIPDA Dashboard')
     create_visual()
     
