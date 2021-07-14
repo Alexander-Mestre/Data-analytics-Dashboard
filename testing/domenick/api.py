@@ -49,7 +49,7 @@ def get_json_file(file):
 # Allows the user to select the dates they want displayed
 def get_dates():
 
-    years = [datetime.datetime.today().year - index for index in range(30)]
+    years = [datetime.datetime.today().year - index for index in range(20)]
     years.reverse()
 
     SD = st.selectbox('Start Year', options=years)
@@ -103,7 +103,7 @@ def create_visual():
         c = alt.Chart(emp_dist).mark_point().encode(
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
         y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
-        )
+        ).interactive()
     elif (visual == 'mark_bar()'):
         c = alt.Chart(emp_dist).mark_bar().encode(
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
@@ -113,22 +113,22 @@ def create_visual():
         c = alt.Chart(emp_dist).mark_line().encode(
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
         y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
-        )
+        ).interactive()
     elif (visual == 'mark_circle()'):
         c = alt.Chart(emp_dist).mark_circle().encode(
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
         y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
-        )
+        ).interactive()
     elif (visual == 'mark_area()'):
         c = alt.Chart(emp_dist).mark_area().encode(
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
         y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
-        )
+        ).interactive()
     elif (visual == 'mark_boxplot()'):
         c = alt.Chart(emp_dist).mark_boxplot().encode(
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
         y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
-        )
+        ).interactive()
 
     theVisual = st.altair_chart(c)          # The completed Graph
 
@@ -256,10 +256,14 @@ def callApi(string, startDate, endDate):
         p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
         json_data = json.loads(p.text)
         return json_data
+
     pressed = st.button('Request Data', key='dataReturn')
 
     if (pressed):
         json_data = get_data() 
+        json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
+        st.write(json_df)
+        st.write('Hello Friend!')
         print('SUCKERS'+ str(json_data))
         if(json_data['status'] == 'REQUEST_NOT_PROCESSED'):
             get_warning()           # GET THAT WARNING
@@ -267,8 +271,7 @@ def callApi(string, startDate, endDate):
         st.stop()
 
     st.subheader('Here is the data that is being used to create the chart!')
-    json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
-    st.write(json_df)
+    
     print('JSON DATA:' + str(json_data))
 
     return json_data
@@ -276,6 +279,8 @@ def callApi(string, startDate, endDate):
 # Main does all the neat stuff, calling functions, creating some of the streamlit application
 def main():
     st.title('ECIPDA Dashboard')
+    #create_data()
+    
     create_visual()
     
 

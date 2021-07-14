@@ -3,7 +3,6 @@
         "State/County Employment from Census": "EN"
     },
     "seasonal": {
-        "Seasonal": "S",
         "Non-Seasonal": "U"
     },
     "area": {
@@ -65,7 +64,7 @@
         "(Archaic -- formerly used for quarterly average monthly employment)": "6"
     },
     "size": {
-        "All establishment sizes": "0 or blank",
+        "All establishment sizes": "0",
         "Fewer than 5 employees per establishment": "1",
         "5 to 9 employees per establishment": "2",
         "10 to 19 employees per establishment": "3",

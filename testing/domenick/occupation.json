@@ -3,7 +3,6 @@
         "Occupational Employment and Wage Stats": "OE"
     },
     "seasonal": {
-        "Seasonal": "S",
         "Non-Seasonal": "U"
     },
     "area_type": {
