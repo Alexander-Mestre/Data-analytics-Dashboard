@@ -44,7 +44,7 @@ def get_data_set():
 
 # Uses the json_file name to get the different drop downs that will be needed
 def get_json_file(file):
-    print(file)
+    #print(file)     # Used for debugging
     if (file):
         with open(file) as json_file:
             json_obj = json.load(json_file)
@@ -88,7 +88,7 @@ def get_visual():
     elif (visual == 'Box Plot'):
         actualVisual = 'mark_boxplot()'
     
-    print(actualVisual)
+    #print(actualVisual)     # Used for debugging
     return actualVisual
 
 def create_visual():
@@ -96,16 +96,17 @@ def create_visual():
     string, startDate, endDate, dataType = create_data()
     # st.button('See Visual', on_click = get_visual())
     visual = get_visual()
-    print(string)
+    #print(string)     # Used for debugging
     
     json_data = callApi(string, startDate, endDate)
     json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
-    print(json_df)
+    #print(json_df)     # Used for debugging
     #json_df['monthYear'] = json_df['periodName'] + ' ' + json_df['year']
     # # #json_df['yearTotals'] = (json_df['value'])
-    # # st.write(json_df)
+    st.subheader('Here is the data that is being used to create the chart!')
+    st.write(json_df)
     emp_dist = pd.DataFrame(json_df, columns=['value', 'year'])
-    print(emp_dist)
+    #print(emp_dist)     # Used for debugging
 
     # This creates the visuals!
     if (visual == 'mark_point()'):
@@ -138,8 +139,13 @@ def create_visual():
         x=alt.X('year:T', axis=alt.Axis(title='Start Year to End Year')),
         y=alt.Y('value:Q', axis=alt.Axis(title=dataType))
         ).interactive()
-
+    
+    st.subheader('Here is the Chart: ')
     theVisual = st.altair_chart(c)          # The completed Graph
+
+    
+    st.markdown('Series ID: **' + string + '**')
+    st.markdown('''<a target="_blank" href="https://data.bls.gov/cgi-bin/srgate">Series ID Tool</a>''', unsafe_allow_html=True)
 
     return theVisual
 
@@ -147,13 +153,15 @@ def create_visual():
 def create_data(): 
     # THE USER SELECTED DATASET
     selection = st.selectbox('Which DataSet would you like information for?', options=list(get_data_set().keys()))
-    #print("SELECTION " + selection + " \n")
+    #print("SELECTION " + selection + " \n")     # Used for debugging
+
     # THE FILE NAME OF THE DATA SET
     files = get_data_set()
-    #print("FILES " + str(files)  + "\n")
+    #print("FILES " + str(files)  + "\n")     # Used for debugging
+
     # THE JSON FILE THE USER WANTED TO SEE DATA 
     dataset = get_json_file(files[selection])
-    #print("DATASET " + str(dataset)  + "\n")
+    #print("DATASET " + str(dataset)  + "\n")     # Used for debugging
     #print(dataset)
 
     string = ''             # Initializing String
@@ -270,7 +278,7 @@ def callApi(string, startDate, endDate):
 
     if (pressed):
         json_data = get_data()
-        print(json_data)
+        #print(json_data)     # Used for debugging
         # print('You are ugly' + str(json_data['message'][0][0:21]))
         if(json_data['status'] == 'REQUEST_NOT_PROCESSED'):
                 get_api_warning()           # GET THAT WARNING
@@ -285,17 +293,14 @@ def callApi(string, startDate, endDate):
     else:
         st.stop()
 
-    st.subheader('Here is the data that is being used to create the chart!')
     
-    print('JSON DATA:' + str(json_data))
+    #print('JSON DATA:' + str(json_data))     # Used for debugging
 
     return json_data
 
 # Main does all the neat stuff, calling functions, creating some of the streamlit application
 def main():
     st.title('ECIPDA Dashboard')
-    #create_data()
-    
     create_visual()
     
 
