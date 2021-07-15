@@ -21,9 +21,18 @@ import datetime
 # Created by Domenick Casper and Alexandre Mestre
 
 # Warning message to explain that the API call limit has reached
-def get_warning():
+def get_api_warning():
     st.warning('Come Back Tomorrow, You have reached the maxiumum number of calls')
     st.stop()
+
+def get_no_data_warning():
+    st.warning('No data exists for this combination of parameters')
+    st.stop()
+
+def get_not_exist_warning():
+    st.warning('This combination of parameters is not possible')
+    st.stop()
+
 
 # Opens the dataset.json file and gets a list of the datasets there
 def get_data_set():
@@ -176,8 +185,8 @@ def create_data():
             areaTypeSelect = st.selectbox('Which type of Area?', options=list(dataset['area_type'].keys()))
             area_type = dataset['area_type'][areaTypeSelect]
 
-            areaSelect = st.selectbox('Which Area?', options=list(dataset['area'].keys()))
-            area = dataset['area'][areaSelect]
+            areaSelect = st.selectbox('Which Area?', options=list(dataset['area'][areaTypeSelect].keys()))
+            area = dataset['area'][areaTypeSelect][areaSelect]
 
             industrySelect = st.selectbox('Which Industry?', options=list(dataset['industry'].keys()))
             industry = dataset['industry'][industrySelect]
@@ -260,13 +269,19 @@ def callApi(string, startDate, endDate):
     pressed = st.button('Request Data', key='dataReturn')
 
     if (pressed):
-        json_data = get_data() 
-        json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
-        st.write(json_df)
-        st.write('Hello Friend!')
-        print('SUCKERS'+ str(json_data))
+        json_data = get_data()
+        print(json_data)
+        # print('You are ugly' + str(json_data['message'][0][0:21]))
         if(json_data['status'] == 'REQUEST_NOT_PROCESSED'):
-            get_warning()           # GET THAT WARNING
+                get_api_warning()           # GET THAT WARNING
+        if (len(json_data['message']) != 0):
+            if(json_data['message'][0][0:17] == 'No Data Available'):
+                get_no_data_warning()
+            elif(json_data['message'][0][0:21] == 'Series does not exist'):
+                get_not_exist_warning()
+            else:
+                json_df = pd.DataFrame(json_data['Results']['series'][0]['data'])
+                st.write(json_df)
     else:
         st.stop()
 

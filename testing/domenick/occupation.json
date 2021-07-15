@@ -11,16 +11,22 @@
         "State": "S"
     },
     "area": {
-        "National": "0000000",
-        "Boise City ID": "0014260",
-        "Coeur d'Alene, ID": "0017660",
-        "Idaho Falls ID": "0026820",
-        "Lewiston, ID-WA": "0030300",
-        "Pocatello, ID": "0038540",
-        "Twin Falls, ID": "0046300",
-        "Idaho": "1600000",
-        "Northwestern Idaho nonmetropolitan area": "1600006",
-        "Southeast-Central Idaho nonmetropolitan area": "1600007"
+        "National": {
+            "National": "0000000"
+        },
+        "State": {
+            "Idaho": "1600000"
+        },
+        "Metropolitan or Nonmetropolitan Area": {
+            "Boise City, ID": "0014260",
+            "Coeur d'Alene, ID": "0017660",
+            "Idaho Falls, ID": "0026820",
+            "Lewiston, ID-WA": "0030300",
+            "Pocatello, ID": "0038540",
+            "Twin Falls, ID": "0046300",
+            "Northwestern Idaho nonmetropolitan area": "1600006",
+            "Southeast-Central Idaho nonmetropolitan area": "1600007"
+        }
     },
     "industry": {
         "Cross-industry, Private, Federal, State, and Local Government": "000000",
