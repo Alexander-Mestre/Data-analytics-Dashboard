@@ -3,6 +3,7 @@ from re import split
 from textwrap import indent
 from altair import datasets
 from altair.vegalite import data
+from numpy.lib.function_base import average
 from streamlit import cli as stcli
 import altair as alt
 import streamlit as st
@@ -259,7 +260,6 @@ def create_data():
     return string, startDate, endDate, dataTypeSelect         # the string, start and end date
 
 # Based on the bls.gov api found here: https://www.bls.gov/developers/api_python.htm
-@st.cache(suppress_st_warning=True)
 def callApi(string, startDate, endDate):
     json_data = ''
 
