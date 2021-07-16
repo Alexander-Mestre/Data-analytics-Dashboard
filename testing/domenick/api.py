@@ -267,7 +267,7 @@ def callApi(string, startDate, endDate):
     def get_data():
         # Getting the dates for the user to choose
         # GET YOUR OWN KEY!
-        key = '5590bbd31ba54c5e902eefa0b1e8a23b'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
+        key = 'fd38569584084bfb98101d4fd80c2ea1'        # PUT YOUR API KEY HERE, REGISTER HERE: https://data.bls.gov/registrationEngine/
         headers = {'Content-type': 'application/json'}  # CHECK YOUR EMAIL, CONFIRM THE KEY, AND YOU SHOULD BE ABLE TO USE THE CODE GIVEN
         data = json.dumps({"seriesid": [string], "startyear":startDate,"endyear":endDate, "registrationkey":key})
         p = requests.post('https://api.bls.gov/publicAPI/v2/timeseries/data/', data=data, headers=headers)
