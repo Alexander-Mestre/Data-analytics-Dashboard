@@ -141,7 +141,7 @@ def create_visual():
         ).interactive()
     
     st.subheader('Here is the Chart: ')
-    theVisual = st.altair_chart(c)          # The completed Graph
+    theVisual = st.altair_chart(c, use_container_width=True)          # The completed Graph
 
     
     st.markdown('Series ID: **' + string + '**')
