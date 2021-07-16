@@ -1,0 +1,38 @@
+{
+    "prefix":
+    {
+        "National Employment, Hours, and Earnings": "CE"
+    },
+    "seasonal":
+    {
+        "Non-Seasonal": "U"
+    },
+    "industry":
+    {
+        "Computer and Software": "41423430",
+        "Total Nonfarm": "00000000",
+        "Total Private": "05000000",
+        "Goods-Producing": "06000000",
+        "Service-Providing": "07000000",
+        "Private Service-Providing": "08000000",
+        "Construction": "20000000",
+        "Manufacturing": "30000000",
+        "Trade, Transportation, Utilities": "40000000",
+        "Retail Trade": "42000000",
+        "Transportation and Warehousing": "43000000",
+        "Utilities": "44220000",
+        "Information": "50000000",
+        "Financial Activities": "55000000",
+        "Professional and Business Services": "60000000",
+        "Other Services": "80000000",
+        "Government": "90000000"
+    },
+    "data":
+    {
+        "All Employees": "01",
+        "Average Weekly Hours": "02",
+        "Average Hourly Earnings": "03",
+        "Average Weekly Earnings": "11"
+    }
+
+}
