@@ -145,7 +145,10 @@ def create_visual():
 
     
     st.markdown('Series ID: **' + string + '**')
-    st.markdown('''<a target="_blank" href="https://data.bls.gov/cgi-bin/srgate">Series ID Tool</a>''', unsafe_allow_html=True)
+    st.markdown('''<a target="_blank" href="https://data.bls.gov/cgi-bin/srgate">Series Report Tool</a>''', unsafe_allow_html=True)
+    st.markdown('''<a target="_blank" href="https://www.bls.gov/emp/tables/stem-employment.htm">Employment and Projections in STEM occupations</a>''', unsafe_allow_html=True)
+    st.markdown('''<a target="_blank" href="https://www.bls.gov/developers/">Public Data API</a>''', unsafe_allow_html=True)
+    st.markdown('''<a target="_blank" href="https://www.bls.gov/help/hlpforma.htm">API Indexes</a>''', unsafe_allow_html=True)
 
     return theVisual
 
