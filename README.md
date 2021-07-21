@@ -10,9 +10,14 @@ NEED TO REGISTER FOR AN API KEY AT: https://data.bls.gov/registrationEngine/
 THEN YOU NEED TO CONFIRM THE KEY WITH THE LINK YOU GET IN YOUR EMAIL.
 THEN YOU NEED TO REPLACE THE KEY INSIDE WITH YOUR KEY.
 
-Steep 2:
+Step 2:
+Install Streamlit: pip install streamlit
+
+Step 3:
 Run the streamlit application by typing the following commands in:
-  streamlit run file.py
+  streamlit run dashboard.py
+  
+(YOU NEED TO BE IN THE SAME DIRECTORY AS THE FILE. It is easy using a cd command: cd folder/)
 
 
 Running the Streamlit application: Streamlit run [ApplicationName]
